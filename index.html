@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Inventario</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #e2e8f0; min-height: 100vh; padding-bottom: 40px; }
+        header { background: linear-gradient(to right, #059669, #14b8a6); color: white; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        header h1 { font-size: 28px; margin-bottom: 5px; }
+        header p { font-size: 14px; opacity: 0.9; }
+        .nav-tabs { display: flex; gap: 10px; padding: 15px; background: #1e293b; border-bottom: 1px solid #334155; overflow-x: auto; position: sticky; top: 0; z-index: 40; }
+        .nav-tabs button { padding: 10px 15px; border: none; border-radius: 8px; background: #475569; color: #cbd5e1; cursor: pointer; font-weight: 500; white-space: nowrap; }
+        .nav-tabs button.active { background: #059669; color: white; }
+        .nav-tabs button:hover { background: #64748b; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .card { background: #334155; border: 1px solid #475569; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 10px; }
+        .btn-primary { background: #059669; color: white; }
+        .btn-primary:hover { background: #047857; }
+        .btn-secondary { background: #475569; color: white; }
+        .btn-secondary:hover { background: #64748b; }
+        .btn-danger { background: #dc2626; color: white; padding: 8px 12px; width: auto; margin: 0; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-edit { background: #2563eb; color: white; padding: 8px 12px; width: auto; margin: 0; }
+        .btn-edit:hover { background: #1d4ed8; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 500; color: #cbd5e1; }
+        input, select { width: 100%; padding: 10px; background: #475569; border: 1px solid #64748b; border-radius: 6px; color: white; font-size: 14px; }
+        input:focus, select:focus { outline: none; border-color: #059669; box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.1); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+        .product-item { background: #475569; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+        .product-info { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+        .product-name { font-weight: 600; margin-bottom: 5px; }
+        .product-recipe { font-size: 12px; color: #cbd5e1; margin-top: 8px; }
+        .btn-group { display: flex; gap: 5px; flex-shrink: 0; }
+        .date-info { background: #064e3b; border: 1px solid #10b981; border-radius: 8px; padding: 12px; color: #a7f3d0; margin-bottom: 15px; }
+        .suggestion-box { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); border: 1px solid #3b82f6; border-radius: 8px; padding: 15px; margin-top: 20px; }
+        .suggestion-item { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; border-bottom: 1px solid #3b82f6; }
+        .suggestion-item:last-child { border-bottom: none; }
+        h2 { margin-bottom: 15px; color: white; }
+        h3 { margin-bottom: 10px; color: white; font-size: 16px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #94a3b8; }
+        .step-indicator { background: #059669; color: white; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-weight: 600; }
+        .status-box { background: #1e40af; border: 1px solid #3b82f6; border-radius: 8px; padding: 15px; margin-bottom: 15px; color: #bfdbfe; }
+        .status-box.ready { background: #064e3b; border-color: #10b981; color: #a7f3d0; }
+        .small-text { font-size: 12px; color: #94a3b8; }
+        .recipe-item { background: #475569; padding: 10px; border-radius: 6px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📦 Mi Inventario</h1>
+        <p>Gestión automática de compras y ventas</p>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" data-tab="dashboard">📊 Hoy</button>
+        <button class="tab-btn" data-tab="records">📋 Registros</button>
+        <button class="tab-btn" data-tab="products">🏪 Productos</button>
+        <button class="tab-btn" data-tab="ingredients">🥘 Ingredientes</button>
+        <button class="tab-btn" data-tab="analytics">📈 Análisis</button>
+    </div>
+
+    <div class="container">
+        <div id="dashboard" class="section active"></div>
+        <div id="records" class="section"></div>
+        <div id="products" class="section"></div>
+        <div id="ingredients" class="section"></div>
+        <div id="analytics" class="section"></div>
+    </div>
+
+    <script>
+        let products = [
+            { id: 1, name: 'Sándwich grande de pollo', category: 'sandwich', recipe: [{ ingredientId: 1, amount: 1, unit: 'unidad' }, { ingredientId: 4, amount: 0.08, unit: 'kg' }, { ingredientId: 8, amount: 1.5, unit: 'loncha' }, { ingredientId: 9, amount: 0.03, unit: 'L' }] },
+            { id: 2, name: 'Perro sencillo', category: 'hotdog', recipe: [{ ingredientId: 2, amount: 1, unit: 'unidad' }, { ingredientId: 5, amount: 1, unit: 'unidad' }, { ingredientId: 7, amount: 0.03, unit: 'kg' }, { ingredientId: 8, amount: 1.5, unit: 'loncha' }, { ingredientId: 9, amount: 0.03, unit: 'L' }] },
+            { id: 3, name: 'Hamburguesa sencilla', category: 'burger', recipe: [{ ingredientId: 3, amount: 1, unit: 'unidad' }, { ingredientId: 6, amount: 0.1, unit: 'kg' }, { ingredientId: 8, amount: 2, unit: 'loncha' }, { ingredientId: 9, amount: 0.03, unit: 'L' }, { ingredientId: 10, amount: 0.05, unit: 'kg' }, { ingredientId: 11, amount: 0.05, unit: 'kg' }] }
+        ];
+
+        let ingredients = [
+            { id: 1, name: 'Pan cubano', unit: 'unidad', price: 800 },
+            { id: 2, name: 'Pan perro', unit: 'unidad', price: 600 },
+            { id: 3, name: 'Pan hamburguesa', unit: 'unidad', price: 700 },
+            { id: 4, name: 'Pollo', unit: 'kg', price: 15000 },
+            { id: 5, name: 'Salchicha', unit: 'unidad', price: 2000 },
+            { id: 6, name: 'Carne molida', unit: 'kg', price: 18000 },
+            { id: 7, name: 'Papas trituradas', unit: 'kg', price: 3500 },
+            { id: 8, name: 'Queso', unit: 'loncha', price: 300 },
+            { id: 9, name: 'Salsa de ajo', unit: 'L', price: 12000 },
+            { id: 10, name: 'Tomate', unit: 'kg', price: 4000 },
+            { id: 11, name: 'Cebolla', unit: 'kg', price: 3000 }
+        ];
+
+        let dailyRecords = [];
+        let currentRecord = null;
+        let editingProductId = null;
+        let editingProductData = null;
+        let showIngredientForm = false;
+
+        function getToday() { return new Date().toISOString().split('T')[0]; }
+        function formatPrice(price) { return price.toLocaleString('es-CO', { maximumFractionDigits: 0 }); }
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(tabName).classList.add('active');
+                btn.classList.add('active');
+                
+                if (tabName === 'dashboard') renderDashboard();
+                if (tabName === 'records') renderRecords();
+                if (tabName === 'products') renderProducts();
+                if (tabName === 'ingredients') renderIngredients();
+                if (tabName === 'analytics') renderAnalytics();
+            });
+        });
+
+        function calculateConsumed(sales) {
+            const consumed = {};
+            ingredients.forEach(ing => consumed[ing.id] = 0);
+            products.forEach(prod => {
+                const sold = sales[prod.id] || 0;
+                prod.recipe.forEach(rec => {
+                    consumed[rec.ingredientId] = (consumed[rec.ingredientId] || 0) + (rec.amount * sold);
+                });
+            });
+            return consumed;
+        }
+
+        function calculateExpected(initial, consumed) {
+            const expected = {};
+            ingredients.forEach(ing => {
+                expected[ing.id] = (initial[ing.id] || 0) - (consumed[ing.id] || 0);
+            });
+            return expected;
+        }
+
+        function calculateSuggested() {
+            const avg = {};
+            ingredients.forEach(ing => avg[ing.id] = 0);
+            dailyRecords.forEach(rec => {
+                const consumed = calculateConsumed(rec.sales);
+                ingredients.forEach(ing => {
+                    avg[ing.id] += (consumed[ing.id] || 0) / dailyRecords.length;
+                });
+            });
+            const suggested = {};
+            ingredients.forEach(ing => {
+                suggested[ing.id] = Math.max(0, avg[ing.id] * 1.2);
+            });
+            return suggested;
+        }
+
+        function renderDashboard() {
+            let content = <div class="date-info">Fecha de hoy: <strong>${getToday()}</strong></div>;
+            const existingRecord = dailyRecords.find(r => r.date === getToday());
+
+            if (!currentRecord && !existingRecord) {
+                content += <div class="status-box"><strong>📌 Paso 1: Stock Inicial</strong><br><p style="margin-top: 10px; font-size: 14px;">Registra cuánto tenías al abrir hoy.</p></div><button class="btn btn-primary" onclick="window.app.startNewRecord()">➕ Registrar Stock Inicial</button>;
+            } else if (currentRecord === null && existingRecord) {
+                const consumed = calculateConsumed(existingRecord.sales);
+                content += <div class="status-box ready"><strong>✓ Stock Inicial Registrado</strong><br><p style="margin-top: 10px; font-size: 14px;">Registra las ventas de hoy.</p></div>;
+                
+                content += <div class="card"><h2>Stock Inicial</h2><div class="grid-2">;
+                ingredients.forEach(ing => {
+                    content += <div><label>${ing.name}</label><input type="text" value="${(existingRecord.initialStock[ing.id] || 0).toFixed(2)}" readonly style="background: #64748b;"><small class="small-text">${ing.unit}</small></div>;
+                });
+                content += </div><button class="btn btn-edit" onclick="window.app.editStockInitial()" style="width: 100%; margin-top: 15px;">✏️ Editar</button></div>;
+
+                content += <div class="card"><h2>Ventas de Hoy</h2><div class="grid-2">;
+                products.forEach(prod => {
+                    content += <div class="form-group"><label>${prod.name}</label><input type="number" id="sales_${prod.id}" value="${existingRecord.sales[prod.id] || 0}"><small class="small-text">unidades</small></div>;
+                });
+                content += </div><h2 style="margin-top: 20px;">Merma</h2><div class="grid-2">;
+                ingredients.forEach(ing => {
+                    content += <div class="form-group"><label>${ing.name}</label><input type="number" step="0.01" id="waste_${ing.id}" value="${existingRecord.waste[ing.id] || 0}"><small class="small-text">${ing.unit}</small></div>;
+                });
+                content += </div><button class="btn btn-primary" onclick="window.app.updateRecord()">✓ Guardar Ventas</button></div>;
+
+                if (dailyRecords.length > 0) {
+                    const suggested = calculateSuggested();
+                    let totalCost = 0;
+                    let suggestionHtml = '';
+                    ingredients.forEach(ing => {
+                        const sug = suggested[ing.id] || 0;
+                        const cost = sug * ing.price;
+                        totalCost += cost;
+                        suggestionHtml += <div class="suggestion-item"><span>${ing.name}</span><strong>${sug.toFixed(2)} ${ing.unit} ($${formatPrice(cost)})</strong></div>;
+                    });
+
+                    content += <div class="suggestion-box"><h2 style="margin-bottom: 10px;">💡 Compra Sugerida para Mañana</h2>${suggestionHtml}<div class="suggestion-item" style="border-top: 2px solid #3b82f6; padding-top: 10px; font-weight: bold;"><span>Total</span><span>$${formatPrice(totalCost)}</span></div></div>;
+                }
+            } else if (currentRecord) {
+                content += <div class="step-indicator">Registrar Stock Inicial</div><div class="card"><h2>¿Cuánto tienes al abrir?</h2><div class="grid-2">;
+                ingredients.forEach(ing => {
+                    content += <div class="form-group"><label>${ing.name}</label><input type="number" step="0.01" id="init_${ing.id}" value="${currentRecord.initialStock[ing.id] || 0}"><small class="small-text">${ing.unit}</small></div>;
+                });
+                content += </div><button class="btn btn-primary" onclick="window.app.saveStockInitial()">✓ Guardar</button><button class="btn btn-secondary" onclick="window.app.cancelRecord()">Cancelar</button></div>;
+            }
+
+            document.getElementById('dashboard').innerHTML = content;
+        }
+
+        function renderRecords() {
+            if (dailyRecords.length === 0) {
+                document.getElementById('records').innerHTML = '<div class="empty-state">No hay registros</div>';
+                return;
+            }
+
+            let content = '';
+            dailyRecords.forEach((rec, idx) => {
+                const consumed = calculateConsumed(rec.sales);
+                content += <div class="card"><button onclick="window.app.toggleRecord(${idx})" style="width: 100%; text-align: left; background: none; border: none; color: white; font-weight: 600; cursor: pointer; padding: 0;">${rec.date} ▼</button><div id="record-${idx}" style="display: none; margin-top: 15px;">;
+                
+                content += '<h3>📊 Ventas:</h3>';
+                products.forEach(prod => {
+                    const sold = rec.sales[prod.id] || 0;
+                    if (sold > 0) content += <div style="padding: 5px 0;">${prod.name}: <strong>${sold}</strong></div>;
+                });
+                
+                content += '<h3 style="margin-top: 15px;">🔥 Consumo:</h3>';
+                ingredients.forEach(ing => {
+                    const amt = consumed[ing.id] || 0;
+                    if (amt > 0) content += <div style="padding: 5px 0;">${ing.name}: <strong>${amt.toFixed(2)} ${ing.unit}</strong></div>;
+                });
+                
+                content += '<h3 style="margin-top: 15px;">⚠️ Merma:</h3>';
+                ingredients.forEach(ing => {
+                    const waste = rec.waste[ing.id] || 0;
+                    if (waste > 0) content += <div style="padding: 5px 0;">${ing.name}: <strong>${waste.toFixed(2)} ${ing.unit}</strong></div>;
+                });
+                
+                content += '</div></div>';
+            });
+
+            document.getElementById('records').innerHTML = content;
+        }
+
+        function renderProducts() {
+            let content = '';
+
+            if (editingProductId !== null) {
+                const prodData = editingProductData;
+                content = <div class="card"><h2>Editar Producto</h2><div class="form-group"><label>Nombre</label><input type="text" id="prod-name" value="${prodData?.name || ''}"></div><div class="form-group"><label>Categoría</label><select id="prod-category"><option value="sandwich" ${prodData?.category === 'sandwich' ? 'selected' : ''}>Sándwich</option><option value="hotdog" ${prodData?.category === 'hotdog' ? 'selected' : ''}>Hot Dog</option><option value="burger" ${prodData?.category === 'burger' ? 'selected' : ''}>Hamburguesa</option></select></div><h3>Ingredientes</h3><div id="recipe-items">;
+                
+                (prodData?.recipe || []).forEach((item, idx) => {
+                    content += <div class="recipe-item"><div class="grid-2"><select id="rec-ing-${idx}">;
+                    ingredients.forEach(i => {
+                        content += <option value="${i.id}" ${i.id === item.ingredientId ? 'selected' : ''}>${i.name}</option>;
+                    });
+                    content += </select><button class="btn btn-danger" onclick="window.app.removeRecipeItem(${idx})">✕</button></div><div class="grid-2" style="margin-top: 10px;"><input type="number" step="0.01" id="rec-amt-${idx}" value="${item.amount}"><select id="rec-unit-${idx}"><option value="kg" ${item.unit === 'kg' ? 'selected' : ''}>kg</option><option value="L" ${item.unit === 'L' ? 'selected' : ''}>L</option><option value="unidad" ${item.unit === 'unidad' ? 'selected' : ''}>unidad</option><option value="loncha" ${item.unit === 'loncha' ? 'selected' : ''}>loncha</option></select></div></div>;
+                });
+                
+                content += </div><button class="btn btn-secondary" onclick="window.app.addRecipeItem()" style="margin-top: 10px;">➕ Agregar Ingrediente</button><button class="btn btn-primary" onclick="window.app.saveProduct()">Guardar</button><button class="btn btn-secondary" onclick="window.app.cancelEditProduct()">Cancelar</button></div>;
+            } else {
+                content = <button class="btn btn-primary" onclick="window.app.newProduct()">➕ Nuevo Producto</button>;
+            }
+
+            content += '<h2 style="margin-top: 20px;">Productos</h2>';
+            products.forEach(prod => {
+                content += <div class="product-item"><div class="product-info"><div style="flex: 1;"><div class="product-name">${prod.name}</div><small style="color: #94a3b8;">${prod.category}</small><div class="product-recipe">${prod.recipe.map(rec => { const ing = ingredients.find(i => i.id === rec.ingredientId); return `${ing?.name}: ${rec.amount} ${rec.unit}; }).join(' | ')}</div></div><div class="btn-group"><button class="btn btn-edit" onclick="window.app.editProduct(${prod.id})">✏️</button><button class="btn btn-danger" onclick="window.app.deleteProduct(${prod.id})">✕</button></div></div></div>`;
+            });
+
+            document.getElementById('products').innerHTML = content;
+        }
+
+        function renderIngredients() {
+            let content = <button class="btn btn-primary" onclick="window.app.toggleIngForm()">➕ Agregar Ingrediente</button>;
+
+            if (showIngredientForm) {
+                content += <div class="card"><h2>Nuevo Ingrediente</h2><div class="form-group"><label>Nombre</label><input type="text" id="ing-name"></div><div class="form-group"><label>Unidad</label><select id="ing-unit"><option value="kg">kg</option><option value="L">L</option><option value="unidad">unidad</option><option value="loncha">loncha</option></select></div><div class="form-group"><label>Precio</label><input type="number" id="ing-price"></div><button class="btn btn-primary" onclick="window.app.saveIngredient()">Agregar</button><button class="btn btn-secondary" onclick="window.app.toggleIngForm()">Cancelar</button></div>;
+            }
+
+            content += '<h2 style="margin-top: 20px;">Ingredientes</h2>';
+            ingredients.forEach(ing => {
+                content += `<div class="product-item"><div class="product-info"><div style="flex: 1;"><div class="product-name">${ing.name}</div><small style="color: #94a3b8;">$${formatPrice(ing.price)} por ${ing.unit}</small></div><butto
