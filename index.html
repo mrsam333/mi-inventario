@@ -3,271 +3,699 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Inventario - Sistema de Gestión</title>
+    <title>Mi Inventario - Sistema de Gestión v2</title>
     <style>
-        /* TODOS TUS ESTILOS ORIGINALES SE MANTIENEN IGUAL */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #1a472a; --secondary: #2d5f47; --accent: #4ade80;
-            --dark: #0f1419; --border: #334155; --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1; --warning: #f59e0b; --danger: #ef4444;
-            --success: #10b981; --info: #3b82f6;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--dark); color: var(--text-primary); line-height: 1.6; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 1rem; }
-        header { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); padding: 2rem 0; margin-bottom: 2rem; border-bottom: 2px solid var(--accent); }
-        h1 { font-size: 2rem; color: var(--accent); margin-bottom: 0.25rem; }
-        .header-subtitle { color: var(--text-secondary); font-size: 0.9rem; }
-        .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; border-bottom: 2px solid var(--border); padding-bottom: 1rem; }
-        .tab-btn { padding: 0.75rem 1.5rem; background: transparent; border: none; color: var(--text-secondary); cursor: pointer; border-bottom: 3px solid transparent; position: relative; bottom: -1rem; }
-        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        .card { background: #1e293b; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 1.5rem; }
-        .card-title { font-size: 1.3rem; color: var(--accent); margin-bottom: 1rem; }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem; }
-        input, select, textarea { width: 100%; padding: 0.75rem; background: #0f1419; border: 1px solid var(--border); color: var(--text-primary); border-radius: 0.375rem; }
-        button { padding: 0.75rem 1.5rem; background: var(--accent); color: var(--primary); border: none; border-radius: 0.375rem; cursor: pointer; font-weight: 600; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
-        th { background: var(--secondary); padding: 1rem; text-align: left; color: var(--accent); }
-        td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
-        .alert { padding: 1rem; border-radius: 0.375rem; margin-bottom: 1rem; border-left: 4px solid; }
-        .alert-info { background: rgba(59, 130, 246, 0.1); border-left-color: var(--info); color: #93c5fd; }
-        .stat-box { background: #1e293b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.375rem; text-align: center; }
-        .stat-number { font-size: 2rem; color: var(--accent); font-weight: 700; }
-        .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
-        .color-danger { color: var(--danger); }
-        .color-success { color: var(--success); }
+
+        :root {
+            --primary: #1a472a;
+            --secondary: #2d5f47;
+            --accent: #4ade80;
+            --dark: #0f1419;
+            --border: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --info: #3b82f6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            position: relative;
+            bottom: -1rem;
+        }
+
+        .tab-btn:hover {
+            color: var(--accent);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: #0f1419;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: #1a1f26;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: var(--primary);
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        button:hover {
+            background: #22c55e;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #3d7f5a;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-info {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #2563eb;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: var(--secondary);
+            padding: 1rem;
+            text-align: left;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: rgba(74, 222, 128, 0.05);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left-color: var(--warning);
+            color: #fcd34d;
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-left-color: var(--danger);
+            color: #fca5a5;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left-color: var(--success);
+            color: #6ee7b7;
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border-left-color: var(--info);
+            color: #93c5fd;
+        }
+
+        .stat-box {
+            background: #1e293b;
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            color: var(--accent);
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            color: var(--accent);
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: var(--accent);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .ingrediente-item {
+            background: #0f1419;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border);
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .ingrediente-item-info {
+            flex: 1;
+        }
+
+        .ingrediente-item-nombre {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .ingrediente-item-detail {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 0.25rem 0;
+        }
+
+        .ingrediente-item-inputs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .ingrediente-item-inputs input {
+            width: 120px;
+        }
+
+        .btn-remove {
+            background: var(--danger);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+            height: fit-content;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                gap: 0.25rem;
+            }
+
+            .tab-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .ingrediente-item {
+                flex-direction: column;
+            }
+
+            .ingrediente-item-inputs {
+                width: 100%;
+            }
+
+            .ingrediente-item-inputs input {
+                width: 100%;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--accent);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .color-accent {
+            color: var(--accent);
+        }
+
+        .color-warning {
+            color: var(--warning);
+        }
+
+        .color-danger {
+            color: var(--danger);
+        }
+
+        .color-success {
+            color: var(--success);
+        }
+
+        .text-small {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 1.5rem 0;
+        }
+
+        .date-selector {
+            background: #1e293b;
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .date-nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .date-nav button {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .date-display {
+            font-size: 1.2rem;
+            color: var(--accent);
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+        }
+
+        .registro-estado {
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .registro-estado.incompleto {
+            color: var(--warning);
+        }
+
+        .registro-estado.completo {
+            color: var(--success);
+        }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <h1>📦 Mi Inventario - Mr. Sam</h1>
-            <p class="header-subtitle">Sistema de gestión de inventario para tu negocio de comidas</p>
+            <h1>📦 Mi Inventario v2</h1>
+            <p class="header-subtitle">Gestión de inventario con gramaje por producto</p>
         </div>
     </header>
 
     <div class="container">
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('hoy')">📅 Hoy</button>
+            <button class="tab-btn active" onclick="switchTab('calendario')">📅 Calendario</button>
+            <button class="tab-btn" onclick="switchTab('hoy')">📝 Registrar Hoy</button>
             <button class="tab-btn" onclick="switchTab('productos')">🍔 Productos</button>
             <button class="tab-btn" onclick="switchTab('ingredientes')">🥘 Ingredientes</button>
             <button class="tab-btn" onclick="switchTab('analisis')">📊 Análisis</button>
             <button class="tab-btn" onclick="switchTab('predicciones')">🔮 Predicciones</button>
         </div>
 
-        <div id="hoy" class="tab-content active">
+        <!-- TAB: CALENDARIO -->
+        <div id="calendario" class="tab-content active">
             <div class="card">
-                <h2 class="card-title">📅 Registro del Día</h2>
-                <div class="grid grid-2">
-                    <div class="form-group"><label>Fecha</label><input type="date" id="fechaHoy"></div>
+                <h2 class="card-title">📅 Registro de Días</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Vista de todos tus registros. Haz clic en un día para editarlo.</p>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <input type="month" id="monthSelector" onchange="actualizarCalendario()">
                 </div>
-                <div class="divider"></div>
-                <h3 style="color: var(--accent); margin-bottom: 1rem;">Stock Inicial (¿Qué hay en nevera?)</h3>
-                <div id="stockInicialContainer"></div>
-                <button onclick="guardarStockInicial()" style="margin-top: 1rem;">Guardar Stock Inicial</button>
-                <div class="divider"></div>
-                <h3 style="color: var(--accent); margin-bottom: 1rem;">Registrar Ventas</h3>
-                <div id="ventasContainer"></div>
-                <button onclick="guardarVentas()" style="margin-top: 1rem;">Guardar Ventas del Día</button>
-                <div class="divider"></div>
-                <h3 style="color: var(--accent); margin-bottom: 1rem;">Merma (Desperdicio)</h3>
-                <div id="mermaContainer"></div>
-                <button onclick="guardarMerma()" style="margin-top: 1rem;">Guardar Merma</button>
-                <div class="divider"></div>
+
+                <div class="grid grid-3">
+                    <div id="calendarioGrid"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">📋 Resumen del Mes</h2>
                 <div class="grid grid-2">
-                    <div class="stat-box"><div class="stat-label">Total Vendido ($)</div><div class="stat-number" id="totalVendido">0</div></div>
-                    <div class="stat-box"><div class="stat-label">Productos Vendidos</div><div class="stat-number" id="productosVendidos">0</div></div>
-                    <div class="stat-box"><div class="stat-label">Merma ($)</div><div class="stat-number color-warning" id="totalMerma">0</div></div>
+                    <div class="stat-box">
+                        <div class="stat-label">Días Registrados</div>
+                        <div class="stat-number" id="diasRegistrados">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Total Ingresos ($)</div>
+                        <div class="stat-number color-success" id="totalIngresosMes">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Total Merma ($)</div>
+                        <div class="stat-number color-warning" id="totalMermaMes">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Promedio Diario ($)</div>
+                        <div class="stat-number color-accent" id="promedioDiarioMes">0</div>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- TAB: REGISTRAR HOY -->
+        <div id="hoy" class="tab-content">
+            <div class="date-selector">
+                <div class="date-nav">
+                    <button onclick="diaAnterior()" class="btn-secondary">← Anterior</button>
+                    <div class="date-display" id="dateDisplay"></div>
+                    <button onclick="diaSiguiente()" class="btn-secondary">Siguiente →</button>
+                </div>
+                <div class="registro-estado" id="registroEstado"></div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">📝 Stock Inicial</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Cantidad de ingredientes al inicio del día</p>
+                <div id="stockInicialContainer" class="grid grid-2"></div>
+                <button onclick="guardarStockInicial()" style="margin-top: 1rem;">Guardar Stock Inicial</button>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">🛍️ Ventas del Día</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Cantidad vendida de cada producto</p>
+                <div id="ventasContainer" class="grid grid-2"></div>
+                <button onclick="guardarVentas()" style="margin-top: 1rem;">Guardar Ventas</button>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">🚫 Merma (Desperdicio)</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Ingredientes desperdiciados</p>
+                <div id="mermaContainer" class="grid grid-2"></div>
+                <button onclick="guardarMerma()" style="margin-top: 1rem;">Guardar Merma</button>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">📊 Resumen del Día</h2>
+                <div class="grid grid-2">
+                    <div class="stat-box">
+                        <div class="stat-label">Total Vendido ($)</div>
+                        <div class="stat-number" id="totalVendidoHoy">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Productos Vendidos</div>
+                        <div class="stat-number" id="productosVendidosHoy">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Merma ($)</div>
+                        <div class="stat-number color-warning" id="totalMermaHoy">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Stock Actual</div>
+                        <div class="stat-number color-success" id="stockActualHoy">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: PRODUCTOS -->
         <div id="productos" class="tab-content">
             <div class="card">
                 <h2 class="card-title">🍔 Gestión de Productos</h2>
-                <div class="grid grid-2">
-                    <div class="form-group"><label>Nombre del Producto</label><input type="text" id="productoNombre"></div>
-                    <div class="form-group"><label>Precio de Venta ($)</label><input type="number" id="productoPrecio"></div>
-                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Define qué ingredientes usa cada producto y en qué cantidad (gramaje)</p>
+
                 <div class="form-group">
-                    <label>Receta (Ingredientes y Cantidades)</label>
-                    <div id="ingredientesCheckbox" class="grid"></div>
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="productoNombre" placeholder="Ej: Sándwich grande de pollo">
                 </div>
-                <button onclick="agregarProducto()">Agregar Producto</button>
+
+                <div class="form-group">
+                    <label>Precio de Venta ($)</label>
+                    <input type="number" id="productoPrecio" placeholder="15000" step="100" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Ingredientes y Gramaje</label>
+                    <div id="ingredientesConGramaje" style="margin-bottom: 1rem;"></div>
+                </div>
+
+                <div class="action-buttons">
+                    <button onclick="agregarProducto()">Agregar Producto</button>
+                    <button class="btn-secondary" onclick="limpiarFormProducto()">Limpiar</button>
+                </div>
+
                 <div class="divider"></div>
+
                 <table>
-                    <thead><tr><th>Producto</th><th>Precio</th><th>Ingredientes</th><th>Acciones</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Ingredientes</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
                     <tbody id="productosTable"></tbody>
                 </table>
             </div>
         </div>
 
-        <div id="ingredientes" class="tab-content">
-            <div class="card">
-                <h2 class="card-title">🥘 Gestión de Ingredientes</h2>
-                <div class="grid grid-2">
-                    <div class="form-group"><label>Nombre</label><input type="text" id="ingredienteNombre"></div>
-                    <div class="form-group">
-                        <label>Unidad</label>
-                        <select id="ingredienteUnidad">
-                            <option value="unidad">Unidad</option><option value="gramo">Gramo (g)</option><option value="ml">Mililitro (ml)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid grid-2">
-                    <div class="form-group"><label>Costo Unitario ($)</label><input type="number" id="ingredienteCosto"></div>
-                    <div class="form-group"><label>Stock Mínimo</label><input type="number" id="ingredienteMinimo"></div>
-                </div>
-                <button onclick="agregarIngrediente()">Agregar Ingrediente</button>
-                <div class="divider"></div>
-                <table>
-                    <thead><tr><th>Ingrediente</th><th>Unidad</th><th>Costo</th><th>Stock</th><th>Acciones</th></tr></thead>
-                    <tbody id="ingredientesTable"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="analisis" class="tab-content">
-            <div class="card">
-                <h2 class="card-title">📊 Análisis de Ventas</h2>
-                <div id="estadisticas"><p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No hay datos aún.</p></div>
-            </div>
-        </div>
-
-        <div id="predicciones" class="tab-content">
-            <div class="card">
-                <h2 class="card-title">🤖 Predicción Automática Local</h2>
-                <button onclick="generarPrediccionLocal()">Generar Predicción</button>
-                <div id="resultadoPrediccionLocal"></div>
-            </div>
-            <div class="card">
-                <h2 class="card-title">🧠 Análisis IA Avanzado con Claude</h2>
-                <div class="alert alert-info">Conecta tu API para análisis profundo.</div>
-                <input type="password" id="claudeKey" placeholder="Tu API Key aquí..." style="margin-bottom: 10px;">
-                <button class="btn-info" onclick="analizarIA()">Analizar con Claude</button>
-                <div id="resultadoIA"></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // --- LÓGICA MEJORADA SIN ELIMINAR SECCIONES ---
-        let db = {
-            ingredientes: JSON.parse(localStorage.getItem('ms_ingredientes')) || [],
-            productos: JSON.parse(localStorage.getItem('ms_productos')) || []
-        };
-
-        const save = () => {
-            localStorage.setItem('ms_ingredientes', JSON.stringify(db.ingredientes));
-            localStorage.setItem('ms_productos', JSON.stringify(db.productos));
-        };
-
-        function switchTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            event.currentTarget.classList.add('active');
-            if(id === 'hoy') renderHoy();
-            if(id === 'productos') { renderProductos(); renderChecks(); }
-            if(id === 'ingredientes') renderIngredientes();
-        }
-
-        function agregarIngrediente() {
-            const n = document.getElementById('ingredienteNombre').value;
-            const u = document.getElementById('ingredienteUnidad').value;
-            const c = parseFloat(document.getElementById('ingredienteCosto').value);
-            const m = parseFloat(document.getElementById('ingredienteMinimo').value);
-            if(!n || isNaN(c)) return alert("Datos incompletos");
-            db.ingredientes.push({ id: "ing_"+Date.now(), nombre: n, unidad: u, costo: c, minimo: m, stockActual: 0 });
-            save(); renderIngredientes();
-        }
-
-        function renderIngredientes() {
-            document.getElementById('ingredientesTable').innerHTML = db.ingredientes.map(i => `
-                <tr><td>${i.nombre}</td><td>${i.unidad}</td><td>$${i.costo}</td>
-                <td class="${i.stockActual <= i.minimo ? 'color-danger' : 'color-success'}">${i.stockActual}</td>
-                <td><button class="btn-danger" onclick="eliminar('ingredientes', '${i.id}')">🗑️</button></td></tr>
-            `).join('');
-        }
-
-        function renderChecks() {
-            document.getElementById('ingredientesCheckbox').innerHTML = db.ingredientes.map(i => `
-                <div style="background:#0f1419; padding:8px; border:1px solid var(--border); border-radius:4px">
-                    <input type="checkbox" id="chk_${i.id}"> ${i.nombre}
-                    <input type="number" id="qty_${i.id}" placeholder="Cant." style="margin-top:5px; height:30px">
-                </div>
-            `).join('');
-        }
-
-        function agregarProducto() {
-            const n = document.getElementById('productoNombre').value;
-            const p = parseFloat(document.getElementById('productoPrecio').value);
-            const receta = [];
-            db.ingredientes.forEach(i => {
-                const chk = document.getElementById('chk_'+i.id);
-                if(chk && chk.checked) {
-                    const q = parseFloat(document.getElementById('qty_'+i.id).value);
-                    if(q > 0) receta.push({ ingredienteId: i.id, cant: q });
-                }
-            });
-            if(!n || isNaN(p) || receta.length === 0) return alert("Error en datos o receta vacía");
-            db.productos.push({ id: "prod_"+Date.now(), nombre: n, precio: p, receta });
-            save(); renderProductos();
-        }
-
-        function renderProductos() {
-            document.getElementById('productosTable').innerHTML = db.productos.map(p => `
-                <tr><td>${p.nombre}</td><td>$${p.precio}</td><td>${p.receta.length} insumos</td>
-                <td><button class="btn-danger" onclick="eliminar('productos', '${p.id}')">🗑️</button></td></tr>
-            `).join('');
-        }
-
-        function renderHoy() {
-            const f = document.getElementById('fechaHoy'); if(!f.value) f.valueAsDate = new Date();
-            document.getElementById('stockInicialContainer').innerHTML = db.ingredientes.map(i => `
-                <div style="display:flex; justify-content:space-between; margin-bottom:8px">
-                    <span>${i.nombre}</span><input type="number" id="ini_${i.id}" placeholder="${i.stockActual}" style="width:80px">
-                </div>
-            `).join('');
-            document.getElementById('ventasContainer').innerHTML = db.productos.map(p => `
-                <div style="display:flex; justify-content:space-between; margin-bottom:8px">
-                    <span>${p.nombre}</span><input type="number" id="vta_${p.id}" placeholder="0" style="width:80px">
-                </div>
-            `).join('');
-        }
-
-        function guardarStockInicial() {
-            db.ingredientes.forEach(i => {
-                const v = parseFloat(document.getElementById('ini_'+i.id).value);
-                if(!isNaN(v)) i.stockActual = v;
-            });
-            save(); alert("Inventario base actualizado.");
-        }
-
-        function guardarVentas() {
-            let total = 0, cant = 0;
-            db.productos.forEach(p => {
-                const v = parseFloat(document.getElementById('vta_'+p.id).value || 0);
-                if(v > 0) {
-                    total += (v * p.precio); cant += v;
-                    p.receta.forEach(r => {
-                        const ing = db.ingredientes.find(i => i.id === r.ingredienteId);
-                        if(ing) ing.stockActual -= (r.cant * v);
-                    });
-                }
-            });
-            document.getElementById('totalVendido').innerText = total.toLocaleString();
-            document.getElementById('productosVendidos').innerText = cant;
-            save(); renderHoy(); alert("Ventas procesadas.");
-        }
-
-        function eliminar(t, id) { if(confirm("¿Eliminar?")) { db[t] = db[t].filter(x => x.id !== id); save(); location.reload(); } }
-
-        window.onload = () => { renderHoy(); renderIngredientes(); renderProductos(); };
-    </script>
-</body>
-</html>
+        <!-- TAB: INGREDIENTES -->
+        <div id="ingredientes" class="tab-con
