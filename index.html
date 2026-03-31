@@ -1,195 +1,80 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mr. Sam - Flujo Original Integrado</title>
-    <style>
-        :root { --p: #10b981; --s: #3b82f6; --d: #f43f5e; --bg: #0b121f; --c: #1e293b; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: #f1f5f9; padding-bottom: 80px; }
-        header { background: #000; padding: 15px; border-bottom: 3px solid var(--p); display: flex; justify-content: space-between; align-items: center; }
-        .nav { display: flex; background: #111827; overflow-x: auto; padding: 10px; gap: 8px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; }
-        .nav button { padding: 10px 16px; border: none; border-radius: 10px; background: #334155; color: #94a3b8; font-weight: bold; cursor: pointer; white-space: nowrap; font-size: 0.8rem; }
-        .nav button.active { background: var(--p); color: #fff; }
-        .container { max-width: 600px; margin: 0 auto; padding: 15px; }
-        .section { display: none; }
-        .section.active { display: block; }
-        .card { background: var(--c); border-radius: 18px; padding: 16px; margin-bottom: 12px; border: 1px solid #334155; }
-        .row { display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 12px; border-radius: 12px; margin-bottom: 8px; }
-        input, select { width: 100%; padding: 12px; background: #0b121f; border: 1px solid #475569; border-radius: 10px; color: #fff; margin-top: 5px; font-size: 1rem; }
-        .btn-p { background: var(--p); color: #fff; border: none; padding: 16px; border-radius: 14px; width: 100%; font-weight: 800; cursor: pointer; margin-top: 10px; }
-        .btn-s { background: var(--s); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; font-weight: bold; }
-        label { font-size: 0.75rem; color: #94a3b8; margin-top: 12px; display: block; font-weight: bold; }
-    </style>
-</head>
-<body>
+function renderAnalytics() {
+    const container = document.getElementById('analytics');
+    const recs = dailyRecords;
+    const ings = ingredients;
+    const prods = products;
 
-<header>
-    <h3 style="letter-spacing: -1px">MR. SAM <span style="color:var(--p)">ERP</span></h3>
-    <div id="reloj" style="font-size:0.75rem; color:var(--p); font-weight: bold;"></div>
-</header>
+    if (recs.length < 1) {
+        container.innerHTML = `<div class="card" style="text-align:center; padding:40px;">
+            <h2 style="color:#10b981">🧠 IA en Espera</h2>
+            <p>Necesito al menos un cierre de ventas para empezar a predecir tus compras.</p>
+        </div>`;
+        return;
+    }
 
-<div class="nav">
-    <button class="active" data-t="bodega">📦 Bodega</button>
-    <button data-t="turno">🍔 Turno</button>
-    <button data-t="historial">📜 Historial</button>
-    <button data-t="cerebro">🧠 Cerebro IA</button>
-    <button data-t="config">⚙️ Ajustes</button>
-</div>
-
-<div class="container">
+    let totalInversion = 0;
+    let mensajeWA = "🛒 PEDIDO INTELIGENTE - MR. SAM %0A";
     
-    <div id="bodega" class="section active">
-        <div class="card">
-            <span style="font-size:0.7rem; font-weight:900; color:var(--p)">INVENTARIO REAL</span>
-            <div id="stock-list" style="margin-top:10px;"></div>
-        </div>
-    </div>
+    let html = `<h2>📈 Predicción de Suministros</h2>
+                <div class="status-box" style="background:#1e293b; border-color:#3b82f6;">
+                    🚀 Estrategia: Consumo histórico + 20% de seguridad.
+                </div>`;
 
-    <div id="turno" class="section">
-        <div class="card">
-            <label>Fecha de la jornada</label>
-            <input type="date" id="shift-date">
-            <hr style="border:0; border-top:1px solid #334155; margin:20px 0;">
-            <span style="font-size:0.7rem; font-weight:900; color:var(--p)">VENTAS</span>
-            <div id="sales-inputs"></div>
-            <span style="font-size:0.7rem; font-weight:900; color:var(--p); margin-top:20px; display:block">MERMAS</span>
-            <div id="waste-inputs"></div>
-            <button class="btn-p" onclick="app.closeShift()">FINALIZAR JORNADA</button>
-        </div>
-    </div>
-
-    <div id="historial" class="section">
-        <div class="card">
-            <span style="font-size:0.7rem; font-weight:900; color:var(--p)">REGISTROS DE CIERRES</span>
-            <div id="hist-list" style="margin-top:10px;"></div>
-        </div>
-    </div>
-
-    <div id="cerebro" class="section">
-        <div class="card">
-            <button class="btn-p" style="background: linear-gradient(45deg, #7c3aed, #3b82f6);" onclick="app.askAI()">GENERAR SUGERENCIA DE COMPRA</button>
-        </div>
-        <div id="ai-result" style="display:none; background:rgba(124, 58, 237, 0.1); border:1px solid #7c3aed; padding:15px; border-radius:15px; margin-top:15px; font-size:0.9rem; line-height:1.5;"></div>
-    </div>
-
-    <div id="config" class="section">
-        <div class="card">
-            <strong>Insumos</strong>
-            <div id="cfg-ings"></div>
-            <button class="btn-p" onclick="app.addI()">+ NUEVO INSUMO</button>
-        </div>
-        <div class="card">
-            <strong>Platos (Recetas)</strong>
-            <div id="cfg-prods"></div>
-            <button class="btn-p" onclick="app.addP()">+ NUEVO PLATO</button>
-        </div>
-        <button class="btn-p" style="background:var(--d); opacity:0.5; margin-top:20px" onclick="app.reset()">BORRAR TODO</button>
-    </div>
-
-</div>
-
-<script>
-const db = {
-    get: (k) => JSON.parse(localStorage.getItem(k)) || [],
-    save: (k, d) => localStorage.setItem(k, JSON.stringify(d)),
-    ings: () => db.get('ms_ings'),
-    prods: () => db.get('ms_prods'),
-    recs: () => db.get('ms_recs'),
-    stock: () => JSON.parse(localStorage.getItem('ms_stock')) || {}
-};
-
-const app = {
-    init() {
-        document.querySelectorAll('.nav button').forEach(b => {
-            b.onclick = () => {
-                document.querySelectorAll('.nav button, .section').forEach(el => el.classList.remove('active'));
-                b.classList.add('active');
-                document.getElementById(b.dataset.t).classList.add('active');
-                app.render(b.dataset.t);
-            };
+    // LA MAGIA: Comparar consumo proyectado vs Stock actual
+    ings.forEach(ing => {
+        let consumoHistoricoTotal = 0;
+        
+        // 1. Calculamos cuánto gastas en promedio por día
+        recs.forEach(r => {
+            prods.forEach(p => {
+                const recItem = p.recipe.find(ri => ri.id == ing.id);
+                if (recItem) consumoHistoricoTotal += (recItem.qty * (r.sales[p.id] || 0));
+            });
+            consumoHistoricoTotal += (r.waste[ing.id] || 0);
         });
-        document.getElementById('shift-date').value = new Date().toISOString().split('T')[0];
-        setInterval(() => { document.getElementById('reloj').innerText = new Date().toLocaleTimeString(); }, 1000);
-        app.render('bodega');
-    },
 
-    render(t) {
-        const ings = db.ings(), prods = db.prods(), stock = db.stock(), recs = db.recs();
-        if(t === 'bodega') {
-            document.getElementById('stock-list').innerHTML = ings.map(i => `
-                <div class="row">
-                    <div><b>${i.name}</b><br><small style="color:#94a3b8">${(stock[i.id]||0).toFixed(2)} ${i.unit}</small></div>
-                    <button class="btn-s" onclick="app.fixStock(${i.id},'${i.name}')">FIX</button>
+        const promedioDiario = consumoHistoricoTotal / recs.length;
+        const metaSemanal = (promedioDiario * 7) * 1.20; // Lo que deberías tener para la semana
+        
+        // 2. Aquí está la predicción real:
+        // Si tienes 10 panes y la IA dice que necesitas 50, te pide 40.
+        const stockActual = (recs[recs.length - 1].initialStock[ing.id] || 0); 
+        const aComprar = Math.max(0, metaSemanal - stockActual);
+        const costo = aComprar * (ing.price || 0);
+
+        if (aComprar > 0) {
+            totalInversion += costo;
+            mensajeWA += • ${ing.name}: *${aComprar.toFixed(2)} ${ing.unit}*%0A;
+
+            html += `
+                <div class="card" style="border-left: 5px solid #3b82f6; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <b style="font-size:16px;">${ing.name}</b><br>
+                        <small style="color:#94a3b8">Sugerencia: <b style="color:#fff">${aComprar.toFixed(2)} ${ing.unit}</b></small>
+                    </div>
+                    <div style="text-align:right">
+                        <span style="color:#10b981; font-weight:bold;">$${formatPrice(costo)}</span><br>
+                        <small style="font-size:10px; opacity:0.6">Faltante proyectado</small>
+                    </div>
+                </div>`;
+        }
+    });
+
+    if (totalInversion === 0) {
+        html += <div class="card">✅ Según la IA, tienes stock suficiente para los próximos 7 días.</div>;
+    } else {
+        html += `
+            <div class="card" style="background: linear-gradient(to right, #1e40af, #1e3a8a); border:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>INVERSIÓN TOTAL:</span>
+                    <span style="font-size:22px; font-weight:900;">$${formatPrice(totalInversion)}</span>
                 </div>
-            `).join('') || 'Crea insumos en Ajustes.';
-        }
-        if(t === 'turno') {
-            document.getElementById('sales-inputs').innerHTML = prods.map(p => `<label>${p.name}</label><input type="number" class="s-in" data-id="${p.id}" value="0">`).join('');
-            document.getElementById('waste-inputs').innerHTML = ings.map(i => `<label>Merma ${i.name}</label><input type="number" step="0.01" class="w-in" data-id="${i.id}" value="0">`).join('');
-        }
-        if(t === 'historial') {
-            document.getElementById('hist-list').innerHTML = [...recs].reverse().map(r => `
-                <div class="row"><span>📅 ${r.date}</span> <span class="btn-s" style="background:#334155">${Object.values(r.sales).reduce((a,b)=>a+b,0)} ventas</span></div>
-            `).join('') || 'Sin historial.';
-        }
-        if(t === 'config') {
-            document.getElementById('cfg-ings').innerHTML = ings.map(i => `<div class="row"><span>${i.name}</span></div>`).join('');
-            document.getElementById('cfg-prods').innerHTML = prods.map(p => `<div class="row"><span>${p.name}</span></div>`).join('');
-        }
-    },
+            </div>
+            <button class="btn" style="background:#25d366; color:white; font-size:16px; font-weight:bold; height:60px;" 
+                    onclick="window.open('https://wa.me/573104172451?text=${mensajeWA}%0A*Total Estimado: $${formatPrice(totalInversion)}*')">
+                📲 ENVIAR PEDIDO POR WHATSAPP
+            </button>`;
+    }
 
-    fixStock(id, name) {
-        const v = prompt(`Cantidad REAL hoy de ${name}:`, db.stock()[id]||0);
-        if(v !== null) { const s = db.stock(); s[id] = parseFloat(v); localStorage.setItem('ms_stock', JSON.stringify(s)); app.render('bodega'); }
-    },
-
-    closeShift() {
-        const s = db.stock(), p = db.prods(), i = db.ings(), f = document.getElementById('shift-date').value;
-        const r = { date: f, sales: {}, waste: {} };
-        document.querySelectorAll('.s-in').forEach(inp => r.sales[inp.dataset.id] = parseInt(inp.value) || 0);
-        document.querySelectorAll('.w-in').forEach(inp => r.waste[inp.dataset.id] = parseFloat(inp.value) || 0);
-        i.forEach(ing => {
-            let cons = 0;
-            p.forEach(pr => { const rc = pr.recipe.find(x => x.id == ing.id); if(rc) cons += (rc.qty * r.sales[pr.id]); });
-            s[ing.id] = (s[ing.id] || 0) - (cons + (r.waste[ing.id] || 0));
-        });
-        const rs = db.recs(); rs.push(r); db.save('ms_recs', rs);
-        localStorage.setItem('ms_stock', JSON.stringify(s));
-        alert("Cierre de " + f + " guardado.");
-        app.render('bodega');
-    },
-
-    askAI() {
-        const res = document.getElementById('ai-result');
-        res.style.display = 'block';
-        res.innerText = "Analizando ventas de la última semana... \nSugerencia calculada para mantener stock óptimo.";
-    },
-
-    addI() {
-        const n = prompt("Insumo:"), u = prompt("Unidad:");
-        if(n){ const i=db.ings(); i.push({id:Date.now(), name:n, unit:u}); db.save('ms_ings', i); app.render('config'); }
-    },
-
-    addP() {
-        const ings = db.ings(), n = prompt("Plato:");
-        if(!n || !ings.length) return;
-        let recipe = [];
-        while(true) {
-            let s = prompt("Insumos:\n" + ings.map((i,idx)=>`${idx}:${i.name}`).join('\n') + "\n'x' para terminar:");
-            if(s === 'x' || s === null) break;
-            let q = prompt(`Cantidad de ${ings[s].name}?`);
-            recipe.push({id: ings[s].id, qty: parseFloat(q)});
-        }
-        const p = db.prods(); p.push({id:Date.now(), name:n, recipe});
-        db.save('ms_prods', p); app.render('config');
-    },
-
-    reset() { if(confirm("¿BORRAR TODO?")) { localStorage.clear(); location.reload(); } }
-};
-app.init();
-</script>
-</body>
-</html>
-
+    document.getElementById('analytics').innerHTML = html;
+}
